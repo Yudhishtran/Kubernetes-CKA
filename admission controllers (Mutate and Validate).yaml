@@ -1,0 +1,89 @@
+admission controllers -	
+	kubctl -> authentication -> authorization -> Admission controller 
+
+kube-apiserver -h | grep enable-admission-plugins
+
+kubectl exec kube-apiserver-controlplane -n kube-system -- kube-apiserver -h | grep enable-admission-plugins
+
+validating admissions controller
+
+mutating admissions controller
+
+Creating secrets and webhook and mutating it to  be accepted as validated pod
+
+kubectl create secret tls NAME --cert=path/to/cert/file --key=path/to/key/file [--dry-run=server|client|none]
+
+webhook service :
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: webhook-server
+  namespace: webhook-demo
+spec:
+  selector:
+    app: webhook-server
+  ports:
+    - port: 443
+      targetPort: webhook-api
+
+webhook deployment:
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webhook-server
+  namespace: webhook-demo
+  labels:
+    app: webhook-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webhook-server
+  template:
+    metadata:
+      labels:
+        app: webhook-server
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1234
+      containers:
+      - name: server
+        image: stackrox/admission-controller-webhook-demo:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8443
+          name: webhook-api
+        volumeMounts:
+        - name: webhook-tls-certs
+          mountPath: /run/secrets/tls
+          readOnly: true
+      volumes:
+      - name: webhook-tls-certs
+        secret:
+          secretName: webhook-server-tls
+
+ webhook configuration: configuration to allow of the creation of  pod by mutating the nonroot user request to root request using mutating admission controller:
+
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: demo-webhook
+webhooks:
+  - name: webhook-server.webhook-demo.svc
+    clientConfig:
+      service:
+        name: webhook-server
+        namespace: webhook-demo
+        path: "/mutate"
+      caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURQekNDQWllZ0F3SUJBZ0lVVzFwckt5NWxHTzFKTVN0MURiZ0pUeUJZdXprd0RRWUpLb1pJaHZjTkFRRUwKQlFBd0x6RXRNQ3NHQTFVRUF3d2tRV1J0YVhOemFXOXVJRU52Ym5SeWIyeHNaWElnVjJWaWFHOXZheUJFWlcxdgpJRU5CTUI0WERUSTFNRE14T0RBM01ETTFObG9YRFRJMU1EUXhOekEzTURNMU5sb3dMekV0TUNzR0ExVUVBd3drClFXUnRhWE56YVc5dUlFTnZiblJ5YjJ4c1pYSWdWMlZpYUc5dmF5QkVaVzF2SUVOQk1JSUJJakFOQmdrcWhraUcKOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQW1JaXd6SC9Pako5VVdBdDh4TGR6NzQ3SDk1MnViVEtLakFDMApLY29YazdkZGFwVlY2M2oxY0hXdVdzY01PN3VQQkJFVEhldDliQzRYZGM0dUZEa0pmSktXRFd1MFNzTy9ab01rCkt3ZkFyNnNhZTVmQUI5Y3VoVlVaWFZhejdSeHNBSUVlZmJkZGUxbHRuMWNYSDBqU2VHRE0wMVd2aFMzRGtoU00KVGFRVi9WL2RlUUFNTUpUREY2S2kyajhnSC9oUUYxdTZ1SnJBRzBDZ00ybmdJM0RQYWNmN1QxS1Y0SXk3MFMwdQpIRWRoSWI2VnlPUnM0VVJFb2hnZ282SnVadGRGYVA4bXI4a0M0N3VsUW1FZklhV1p4dEpHbUZqMEpKeGhDK013CmkzaFE3Zk9COUFydzRTY1JpMnFiZFd5NWdCdk0vZ2g3b0tzNWJoWjdlMXNKb1hkZFhRSURBUUFCbzFNd1VUQWQKQmdOVkhRNEVGZ1FVczNKSVgvR0FXbnZpOTg5YW9aLzlLblRUN0NBd0h3WURWUjBqQkJnd0ZvQVVzM0pJWC9HQQpXbnZpOTg5YW9aLzlLblRUN0NBd0R3WURWUjBUQVFIL0JBVXdBd0VCL3pBTkJna3Foa2lHOXcwQkFRc0ZBQU9DCkFRRUFjWVBlT29wOVpWV1ZPSXNlcHpJSlk4dEJzRkdPaFJMQnlXQk8zNzI5b2d6MUZkSGlhWkJkZXhBNWRGVVIKSTRXeU1WMUMySlcxM0xad1NBd3pDeUJpYVJGQTFNUGdUVzZJVTRzcEx4MXdVcnNCaVFOVGdRd3VpWEZaeHpGagp3bXI4V0dRakJ1dG0vR0R1YkxhNXVtcFhsaDhBc2RXTjU3cXo5RC9VM3UyVDFLOXBhUXY1ekZ4dGM5Zkw0YkdaClpGSTliVXZUQ1hlYS85WWxtVnN0WUVhV2F6VEQ1QXVVVk5vUmEvU2FqRDd4MmI1aEpZVllKbHFuajVkb2dnTEYKZExDMEhsazZEeEZ1U1IrN05aY0U2c3NlbU9aUmN5Mno2dUJqNTVuNi9IR2ZpT3VzT3Q1NlV1T3JwM0xBR3lKeQpGWUwzY3hSREw3OUl6UWF1c3Z5dzBsUDVjZz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    rules:
+      - operations: [ "CREATE" ]
+        apiGroups: [""]
+        apiVersions: ["v1"]
+        resources: ["pods"]
+    admissionReviewVersions: ["v1beta1"]
+    sideEffects: None
