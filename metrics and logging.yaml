@@ -1,0 +1,22 @@
+#for minikube:
+
+minikube addons enable metrics-server
+
+#for full clusters:
+
+git clone https://github.com/kubernetes-incub
+
+kubectl create -f deploy/1.8+/
+
+#or:
+
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+#displays the metrics:
+
+kubectl top node
+
+
+#Check logs using 
+
+kubectl logs -f <pod name> <if multiple pod specify pod>
