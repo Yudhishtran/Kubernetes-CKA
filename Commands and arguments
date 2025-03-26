@@ -1,0 +1,21 @@
+The Commands and arguments in a Dockerfile are used to override the ENTRYPOINT and CMD 
+
+CMD can be passed as a single argument or as JSON array format 
+CMD sleep 5 or CMD ["sleep","5"] ie CMD ["exectuable", "parameter"]
+
+eg:
+
+ENTRYPOINT ["sleep"]
+
+CMD ["5"]
+
+when a docker cli is passed as:
+
+docker run ubuntu sleep 5
+
+while switching to  K8s the ENTRYPOINT becomes the command and arg become the CMD
+
+creating a image using/passing an argument
+
+kubectl run <pod name> --image <image name> -- <arg1...argN>
+kubectl run nginx --image nginx -- --color=green
