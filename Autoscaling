@@ -1,0 +1,20 @@
+Autoscaling - 
+Vertical Scaling and Horizontal scaling
+
+Scaling cluster Infra and Scaling workload
+
+Adding more clusters,  and increasing the size of the cluster is Vertical scaling
+Adding more application/workload horizontally or  Increasing the size of the workload.
+
+Methods to scale,
+Manually and Automatically
+
+kubeadm join - used to add new nodes to the cluster.
+kubectl scale for - used to scale the number of pods horizontally.
+
+Horizontal Pod Autoscaler:
+HPA depends upon current metric server info, Custom metric adapter in internal resource or use external adapter is used for other source like datadog and prometheus etc.
+
+kubectl autoscale deployments my-app \ --cpu-percent=50 --min=1 --max=10 
+kubectl get hpa
+kubectl delete hpa
