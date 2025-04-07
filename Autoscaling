@@ -16,5 +16,5 @@ Horizontal Pod Autoscaler:
 HPA depends upon current metric server info, Custom metric adapter in internal resource or use external adapter is used for other source like datadog and prometheus etc.
 
 kubectl autoscale deployments my-app \ --cpu-percent=50 --min=1 --max=10 
-kubectl get hpa
+kubectl get hpa --watch
 kubectl delete hpa
