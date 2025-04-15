@@ -1,0 +1,28 @@
+Cluster upgrade,
+only the latest and two minor version is supported. ie 3 consequtive minor version is supported.
+if 1.13 is released, 1.12 and 1.11 is supported. When upgrading from 1.11 we have to upgrade to 1.12 and then 1.13
+the Kube API server has to be of the highest version in control plane, rest of them can be of 2 versions lower, the kubelet and proxy are completely different version and they are not,
+part of the control plane versioning system. The ETCD also maintains different version than the control plane components.
+
+Node upgrade stratergy:
+1- Downtime on all nodes, upgrade them and going live
+2- Downtime on 1 node, while pods in the nodes are moved to other live node, then upgrading the node and moving the pods back
+3- Delete old version of the node and create new node with the latest version.
+
+
+kubeadm is used for controlplane and node administrative task, ie 
+
+kubeadm upgrade apply <version number>
+kubeadm upgrade plan
+apt-get upgrade -y kukbeadm=<version number>
+
+While the upgrade is applied only on the master node with the kubeadm.
+
+To upgrade the nodes,
+
+kubectl drain <node name>
+apt-get upgrade -y kubeadm=<version number>
+apt-get upgrade -y kubelet=<version number>
+kubeadm upgrade node config --kublet-version <version number>
+systemctl restart kubelet
+kubectl uncordon <node name>
