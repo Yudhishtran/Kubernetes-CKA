@@ -1,0 +1,21 @@
+UPGRADING KUBEADM IN CONTROLPLANE
+
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.32/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.32/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+sudo apt-mark unhold kubeadm
+sudo apt-get update && sudo apt-get install -y kubeadm='v1.32.0-1.1'
+sudo apt-mark hold kubeadm
+
+systemctl daemon-reload
+systemctl restart kubeadm
+
+sudo apt-mark unhold kubelet kubectl && \
+sudo apt-get update && sudo apt-get install -y kubelet='1.32.0-1.1' kubectl='1.32.0-1.1' && \
+sudo apt-mark hold kubelet kubectl
+
+systemctl daemon-reload
+systemctl restart kubelet
+
+FOR WORKER NODE FOLLOW THE SAME STEP
