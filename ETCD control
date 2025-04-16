@@ -1,0 +1,43 @@
+ETCD acts indpendently has its own version control and leader-follower setup. ETCD communicates via the TLS through all the subscribersie API Server
+ETCDCTL is used for etcd control
+
+export is used to set the version of the etcd, on the master node:
+------------------------------------------------------------------------------------------------------------
+export ETCDCTL_API=3
+
+These flags are necessary as TLS is involved,
+
+--cacert
+--cert
+--endpoints=[ 127.0.0.1:2379]
+--key
+
+etcdctl snapshot save
+
+To reinitate a backup from snapshot.db
+
+etcdctl \ snapshot restore snapshot.db \
+	  --data-dir /var/lib/etcd-from-backup
+
+-----------------------------------------------------------------------------------------------------------
+SAVING A SNAPSHOT:
+
+ETCDCTL_API=3 etcdctl \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/server.crt \
+  --key=/etc/kubernetes/pki/etcd/server.key \
+  snapshot save /opt/snapshot-pre-boot.db
+
+RESTORING A SNAPSHOT:
+
+ETCDCTL_API=3 etcdctl \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/server.crt \
+  --key=/etc/kubernetes/pki/etcd/server.key \
+  snapshot restore /opt/snapshot-pre-boot.db
+
+Since, etcd is not installed as an independent package in the cluster as it is installed as a part of kubeadm it works as a static pod so stoping kubelet and moving the manifest file to different location,
+will stop the static pod etcd.
+
