@@ -41,3 +41,9 @@ ETCDCTL_API=3 etcdctl \
 Since, etcd is not installed as an independent package in the cluster as it is installed as a part of kubeadm it works as a static pod so stoping kubelet and moving the manifest file to different location,
 will stop the static pod etcd.
 
+systemctl stop kubelet
+
+mv /etc/kubernetes/manifests/etcd.yaml /etc/kubernetes/manifests/etcd.yaml.bak
+
+etcdctl \ snapshot restore snapshot.db \
+	  --data-dir /var/lib/etcd-from-backup
