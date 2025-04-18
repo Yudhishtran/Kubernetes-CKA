@@ -1,4 +1,4 @@
-ETCD acts indpendently has its own version control and leader-follower setup. ETCD communicates via the TLS through all the subscribersie API Server
+ETCD acts indpendently has its own version control and leader-follower setup. ETCD communicates via the TLS through all the subscribers ie API Server
 ETCDCTL is used for etcd control
 
 export is used to set the version of the etcd, on the master node:
@@ -40,6 +40,8 @@ ETCDCTL_API=3 etcdctl \
 
 Since, etcd is not installed as an independent package in the cluster as it is installed as a part of kubeadm it works as a static pod so stoping kubelet and moving the manifest file to different location,
 will stop the static pod etcd.
+
+or simply specifiying the namespace of the kubesystem (control plane) in which the ETCD static pod is present will be enough
 
 systemctl stop kubelet
 
