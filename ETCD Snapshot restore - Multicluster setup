@@ -1,0 +1,63 @@
+Prerequiste:
+2 clusters - each with 2 nodes. So, Totally 4 nodes.
+Control plane is present for both the clusters. But,
+ETCD is stacked in Cluster1 and Cluster2 is pointed to the ETCD in Cluster1. So, it is a external ETCD setup for Cluster2
+
+Take a snapshot of ETCD and save it locally in one of the node:
+
+ssh into the etcd server, then uses
+
+ETCDCTL_API=3 etcdctl \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/etcd/pki/ca.pem \
+  --cert=/etc/etcd/pki/etcd.pem \
+  --key=/etc/etcd/pki/etcd-key.pem \
+  snapshot save /tmp/cluster1.db
+
+copy the .db file from etcd-server to any node.
+from the node' terminal, 
+
+scp etcd-server:/opt/cluster1.db /root/
+
+Now, restoring the etcd from a snapshot for cluster2. here, we have to copy the cluster2.db to etcd server and restore it with new data directory.
+
+lets, say the cluster2.db is in the node2
+
+from node2 terminal, copy .db file to etcd server,
+
+scp /opt/cluster2.db etcd-server:/root/
+
+now, from the etcd server terminal,
+
+ETCDCTL_API=3 snapshot restore /root/cluster2.db --data-dir /etc/etcd/data-new
+
+now in this directory, Change the data-dir of etcd to the new directory
+
+vi /etc/systemd/system/etcd.system
+
+here, change the directory of the etcd. on --data-dir
+
+now, 
+systemctl daemon-reload
+systemctl restart etcd
+systemctl status etcd
+
+this commands will reload daemon, restart etcd application and then shows the status of etcd.
+
+
+now, in a terminal ssh into control plane of the cluster 2 and use,
+
+kubectl get pods -n kube-system
+
+copy the name of the controller and scheduler pods and try to delete them , if they cant be deleted.
+
+move the manifest files and wait for few mins
+
+mv /etc/kubernetes/manifest/controller.yaml , scheduler.yaml /tmp/
+now, move the manifests back to its original directory, this will restart the pods,
+
+in the controlplane of cluster2 , reset the kubelet using,
+systemctl restart kubelet.
+
+this will refresh the cluster2 controller and scheduler and kubelet and it will start using the snapshot restored.
+
