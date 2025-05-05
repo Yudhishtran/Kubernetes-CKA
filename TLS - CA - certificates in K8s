@@ -1,0 +1,26 @@
+Understand the basics of TLS/SSL certificates.
+How Private and Public key works (Asymmetric)
+Once communication is established,as after the asymmetric keys are validated, using symmetric keys is faster for communication.
+
+In a K8s cluster, the control plane components uses certificates to secure the communication with the API server,
+all the components acts as the clients (ie, Scheduler, controller manager, kubelet, kubeproxy, admin)
+While the API server acts as the server for all the components, the ETCD only communicates with the Kube-API server so, the ETCD acts as the server and api-server as client to the ETCD.
+
+
+Self-Signing CA for the kubernetes cluster using Open-SSL :
+
+Generating a key :-
+
+openssl genrsa -out ca.key 2048
+
+Certificate Signing Request :-
+
+openssl req -new -key ca.key -subj "/CN=KUBERNETES-CA" -out ca.csr
+
+Sing Certificate :-
+
+openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt
+
+To validate each other, a signed CA certificate is distributed to all the control plane components
+
+giving Restful API request with certificates, 
