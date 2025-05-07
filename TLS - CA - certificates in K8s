@@ -24,3 +24,9 @@ openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt
 To validate each other, a signed CA certificate is distributed to all the control plane components
 
 giving Restful API request with certificates, 
+
+
+Decoding a cert to read what's inside,
+
+openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text -noout
+
