@@ -30,3 +30,38 @@ Decoding a cert to read what's inside,
 
 openssl x509 -in /etc/kubernetes/pki/apiserver.crt -text -noout
 
+----------------------------------------------------------------  CERTIFICATES API  ----------------------------------------------------
+with the CA file anyone can create a new node or user within the cluster so it has to be stored securely by the administrator.
+
+Creating cert for a new user and applying to the cluster.
+
+openssl genrsa -out jane.key 2048
+openssl req -new -key jane.key -subj "/CN=jane" -out jane.csr
+
+Use the key and create a CertificateSigningObject 
+
+now, write a Certificate Signing Request in yaml:
+
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: jane
+spec:
+  signerName: kubernetes.io/kube-apiserver-client
+  expirationSeconds: 600
+  usages:
+    - client auth
+	- digital signature
+	- key encipherment
+	- server auth
+  request: <base64-encoded-CSR>
+
+encode the content in CSR file into base64 and paste it insie the "request:" section.
+
+and then,
+
+kubectl get csr, --- > shows all the csr available
+kubectl certificate approve jane
+kubectl get csr jane -o yaml
+
+All the certificate management is done by controller manager. Within the conrtoller manager we can see the ca.crt and ca.key which is definitely needed to sign other certificates.
