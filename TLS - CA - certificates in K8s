@@ -17,7 +17,7 @@ Certificate Signing Request :-
 
 openssl req -new -key ca.key -subj "/CN=KUBERNETES-CA" -out ca.csr
 
-Sing Certificate :-
+Sign Certificate :-
 
 openssl x509 -req -in ca.csr -signkey ca.key -out ca.crt
 
