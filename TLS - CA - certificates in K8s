@@ -56,7 +56,7 @@ spec:
 	- server auth
   request: <base64-encoded-CSR>
 
-encode the content in CSR file into base64 and paste it insie the "request:" section.
+encode the content in CSR file into base64 and paste it inside the "request:" section.
 
 and then,
 
