@@ -1,0 +1,16 @@
+Each kuberenetes component has its certificate to communicate securely within K8s or cluster. 
+All the cert path and key path is mostly stored in kuberentes API server.
+The default path where the cert and key is stored is, "etc/kuberentes/pki/"
+To view the certificate details use the openssl command to open it in human-redable format -> openssl x509 -in /etc/kuberentes/pki/apiserver.crt -text -nout
+while a server can have a defualt name as such DNS and IP Addr, but it can also alternate name, etc : master, kubernetes , kuberentes.default, kuberenetes.default.svc, kuberenetes.default.svc.cluster.local, IPAddress: 10.96.0.1, IPAddress: 172.17.0.27
+
+Inspect service log to find more about certificates and its releated issue, using "journalctl" with the serivce name if its baremetal deployment of k8s, if its containerised used "docker logs" with container ID
+
+-------------------------______________________________________________________________________________________________________________________________________________________----------------------------------------
+
+ LETS see how Certificate API works,
+
+The controller manager is where the certificate authority is present. 
+I create an openrsa , private key and public key for the user, then take that to CA in k8s cluster and create a CSR and for that user from CA and pass it to the k8s as a CertificateSigningRequest object in yaml file,
+Then it is created within the cluster, using kubectl create -f CSR.yml
+now, it can be approved or denied by the admin using - kubectl approve/deny <username>
