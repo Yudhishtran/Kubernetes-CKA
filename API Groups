@@ -1,0 +1,68 @@
+The api is classified as /metrics /healthz /version /api /apis /logs
+as their name suggest they have different role in the k8s, the version is to get the version of the cluster, and the /api is where the core components of the k8s remain
+the core ie /api contains all the essential components of the k8s such as,
+
+/api/v1/
+├── namespaces
+├── pods
+├── nodes
+├── services
+├── endpoints
+├── configmaps
+├── secrets
+├── persistentvolumes           (pv)
+/├── persistentvolumeclaims     (pvc)
+├── replicationcontrollers      (rc)
+├── events
+├── bindings
+
+
+the named group is much more organised, /apis/
+
+/apis/
+├── apps/v1
+│   ├── deployments
+│   ├── daemonsets
+│   ├── replicasets
+│   └── statefulsets
+│
+├── batch/v1
+│   ├── jobs
+│   └── cronjobs
+│
+├── autoscaling/v1
+│   └── horizontalpodautoscalers (HPA)
+│
+├── networking.k8s.io/v1
+│   ├── networkpolicies
+│   └── ingresses
+│
+├── rbac.authorization.k8s.io/v1
+│   ├── roles
+│   ├── rolebindings
+│   ├── clusterroles
+│   └── clusterrolebindings
+│
+├── policy/v1
+│   └── poddisruptionbudgets
+│
+├── storage.k8s.io/v1
+│   ├── storageclasses
+│   └── volumeattachments
+
+
+In Kubernetes, verbs refer to the actions or operations you can perform on resources using the Kubernetes API or RBAC (Role-Based Access Control).
+
+get, list, watch, create, update, patch, delete, deletecollection, proxy, impersonate, are some of the verbs.
+
+
+To get a curl response, we have to input the cert and key with to get the apis as the root,
+
+curl http://localhost:6443 -k
+--key admin.key
+--cert admin.cert
+--cacert ca.rt
+
+The alternate method is kubectl proxy , which runs with your kubeconfig file, this will forward all the apis running in the root.
+The kubectl-proxy acts as a proxy service to connect to th api server, in k8s.
+
