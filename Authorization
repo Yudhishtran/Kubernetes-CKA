@@ -1,0 +1,78 @@
+Types of authorization:
+
+1. Node
+2. ABAC
+3. RBAC
+4. Webhook
+(5). AlwaysAllow
+(6). AlwaysDeny
+
+
+Node Authorization:
+                  user and Kubelet has the access to the node with their authrization.
+
+ABAC - Attribute Based Authrization control:
+                  Is when the user or a user group is attributed to a set of permission. This is achieved with the a policy files with a set of defined policy. which is then passed into the api server where it is updated. 
+                  so everytime a ABAC policy is created it has to be sent
+                  to the api server and api server has to be restarted for the ABAC to take effect.
+
+RBAC - Role based authorization control: 
+                  Here, we create a role, in order to give them access, for eg: dev get the view, delete pod and create pod, where as Cybersec guy gets to view the CSR and approvee the CSR. So,
+                  if we need to change few things for the user we simply modify the role and it reflects on
+                  the role assigned user immediately.
+                  we create a object i.e role object - using a role definition file. then we create a role-binding object/ definition file with which we bind the role to the user.
+                  use kubectl create -f to create the role and its binding 
+
+          To check if a user has access to specific things in the cluster,
+
+            use, kubectl auth can-i <create deployment> <delete nodes>
+            if i am the admin, use the flag --as <dev-user>                         eg: kubectl auth can-i create deployment --as dev-user
+
+            kubectl describe rolebinding kube-proxy -n kube-system 
+
+
+                    Sample role for dev:
+                    
+                                        apiVersion: rbac.authorization.k8s.io/v1
+                                        kind: Role
+                                        metadata:
+                                          namespace: default
+                                          name: developer
+                                        rules:
+                                        - apiGroups: [""] # "" indicates the core API group
+                                          resources: ["pods"]
+                                          verbs: ["list", "create", "delete"]
+                    
+                    
+                    Sample role-binding for the above: 
+                    
+                                        apiVersion: rbac.authorization.k8s.io/v1
+                                        # This role binding allows "jane" to read pods in the "default" namespace.
+                                        # You need to already have a Role named "pod-reader" in that namespace.
+                                        kind: RoleBinding
+                                        metadata:
+                                          name: dev-user-binding
+                                          namespace: default
+                                        subjects:
+                                        # You can specify more than one "subject"
+                                        - kind: User
+                                          name: dev-user # "name" is case sensitive
+                                          apiGroup: rbac.authorization.k8s.io
+                                        roleRef:
+                                          # "roleRef" specifies the binding to a Role / ClusterRole
+                                          kind: Role #this must be Role or ClusterRole
+                                          name: developer # this must match the name of the Role or ClusterRole you wish to bind to
+                                          apiGroup: rbac.authorization.k8s.io
+
+        
+
+Webhooks:
+                  We can also manage authorisation mechanism externally, using webhooks, if we dont want to use the built in mechanism.
+                  we can use open source tools like the open policy agent.
+
+
+
+
+
+apart from this we have AlwaysAllow and AlwaysDeny. 
+
