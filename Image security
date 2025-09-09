@@ -1,0 +1,9 @@
+For private registry,
+
+K8s has built in secrets manager, within that there is a secret type for docker registry.
+
+kubectl create secret docker-registry my-docker-secret \
+  --docker-server=<REGISTRY_URL> \
+  --docker-username=<USERNAME> \
+  --docker-password=<PASSWORD> \
+  --docker-email=<EMAIL>
