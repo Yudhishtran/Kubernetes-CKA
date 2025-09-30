@@ -1,0 +1,116 @@
+#Adding a volume to already pod by taking a get-output and modifying the pod manifest to add new volume and mount hostpath as well
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2025-09-30T10:20:24Z"
+  generation: 1
+  name: webapp
+  namespace: default
+  resourceVersion: "867"
+  uid: 444cd583-be4b-4f3b-809f-af0458aa7695
+spec:
+  containers:
+  - env:
+    - name: LOG_HANDLERS
+      value: file
+    image: kodekloud/event-simulator
+    imagePullPolicy: Always
+    name: event-simulator
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /log
+      name: kube-api-access-xdx69
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: controlplane
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: webapp
+    hostPath:
+      path: /var/log/webapp
+  - name: kube-api-access-xdx69
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2025-09-30T10:20:28Z"
+    status: "True"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2025-09-30T10:20:24Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2025-09-30T10:20:28Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2025-09-30T10:20:28Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2025-09-30T10:20:24Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: containerd://dd337d6801abbea4a1f5c1753fe35814b2b2bf35ff9aab39fcca8da5046bc726
+    image: docker.io/kodekloud/event-simulator:latest
+    imageID: docker.io/kodekloud/event-simulator@sha256:1e3e9c72136bbc76c96dd98f29c04f298c3ae241c7d44e2bf70bcc209b030bf9
+    lastState: {}
+    name: event-simulator
+    ready: true
+    resources: {}
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2025-09-30T10:20:28Z"
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-xdx69
+      readOnly: true
+      recursiveReadOnly: Disabled
+  hostIP: 192.168.122.170
+  hostIPs:
+  - ip: 192.168.122.170
+  phase: Running
+  podIP: 172.17.0.4
+  podIPs:
+  - ip: 172.17.0.4
+  qosClass: BestEffort
+  startTime: "2025-09-30T10:20:24Z"
