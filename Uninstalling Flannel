@@ -1,0 +1,9 @@
+To see which network plugin is used,
+use  - ps aux
+
+to delete the network plugin, say flannel,
+
+remove the flannel config from -> /etc/cni/net.d/
+
+Then remove the flannel DaemonSet in the namespace kube-flannel,
+Then the ConfigMap from the same namespace, this will stop the flannel or other network plugin.
