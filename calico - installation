@@ -1,0 +1,7 @@
+Calico is an exteneded network plugin which is recommened for production grade clusters,
+To install calico ,
+      1. create a cluster
+      2. Install Calico CRD,   kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/tigera-operator.yaml
+      3. Install the Calico CR, kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.3/manifests/custom-resources.yaml
+(you can wget the CR, then change the CIDR Block to default ones,) then use same command except the URL, but use the downloaded CR file.)
+                  
