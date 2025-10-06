@@ -1,0 +1,103 @@
+Lets understand the CNI, 
+CNI is a industry standard approach, which follows a specific set of instruction to ADD or DELETE a network bridge, or simply said network components needed for communication,
+when a container is created, ContainerD instructs CNI to use the specific network plugin to create a network like bridge,vlan,eth, etc then , networkplug calls the IPAM to allocate IP for the created network components and pod,
+after creation of IP addr and network components it is reported back to containerD.
+
+If the pod is deleted, CNI standard DELETE instruction is passed to release the IP and network components, so that no same IP is assigned to pods.
+
+┌────────────────────────────────────────────────────────────────────┐
+│                        POD CREATION FLOW                           │
+└────────────────────────────────────────────────────────────────────┘
+
+   ┌──────────────────┐
+   │  kubelet         │
+   │  (asks container │
+   │   runtime to run │
+   │   a new Pod)     │
+   └───────┬──────────┘
+           │
+           ▼
+   ┌──────────────────┐
+   │ containerd        │
+   │ - creates network │
+   │   namespace       │
+   │ - calls CNI ADD   │
+   └───────┬──────────┘
+           │
+           ▼
+   ┌──────────────────┐
+   │  CNI Plugin       │
+   │ (e.g. bridge,     │
+   │  Calico, Flannel) │
+   └───────┬──────────┘
+           │
+           ▼
+   ┌──────────────────┐
+   │  IPAM Plugin      │
+   │  (IP Address Mgmt)│
+   │  - picks free IP  │
+   │  - updates pool   │
+   └───────┬──────────┘
+           │
+           ▼
+   ┌──────────────────┐
+   │  CNI Plugin       │
+   │  - creates veth   │
+   │  - assigns IP     │
+   │  - sets routes &  │
+   │    gateway         │
+   └───────┬──────────┘
+           │
+           ▼
+   ┌──────────────────┐
+   │ containerd        │
+   │ - gets IP info    │
+   │ - updates PodNet  │
+   │   namespace        │
+   └───────┬──────────┘
+           │
+           ▼
+   ┌──────────────────┐
+   │ Pod running with │
+   │ assigned IP       │
+   │ (e.g. 10.244.1.5) │
+   └──────────────────┘
+
+
+┌────────────────────────────────────────────────────────────────────┐
+│                         POD DELETION FLOW                           │
+└────────────────────────────────────────────────────────────────────┘
+
+   ┌──────────────────┐
+   │ kubelet tells     │
+   │ containerd to stop│
+   │ the Pod           │
+   └───────┬──────────┘
+           │
+           ▼
+   ┌──────────────────┐
+   │ containerd        │
+   │ - calls CNI DEL   │
+   └───────┬──────────┘
+           │
+           ▼
+   ┌──────────────────┐
+   │ CNI Plugin        │
+   │ - removes veth    │
+   │ - calls IPAM DEL  │
+   └───────┬──────────┘
+           │
+           ▼
+   ┌──────────────────┐
+   │ IPAM Plugin       │
+   │ - releases IP back│
+   │   to pool          │
+   │ - updates records  │
+   └───────┬──────────┘
+           │
+           ▼
+   ┌──────────────────┐
+   │ containerd reports│
+   │ cleanup complete  │
+   └──────────────────┘
+         
