@@ -1,0 +1,17 @@
+<service-name>.<namespace>.svc.<cluster-domain>
+
+
+Pod Query → CoreDNS → kube-apiserver → Service ClusterIP
+
+Query Flow:
++-----------------------+
+| webapp.default.svc.cluster.local |
++-----------------------+
+           ↓
+   CoreDNS (10.96.0.10)
+           ↓
+   Looks up in etcd via API
+           ↓
+   Finds ClusterIP for Service
+           ↓
+   Returns 10.105.34.23 to Pod
