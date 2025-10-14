@@ -1,0 +1,9 @@
+Gateway API is organized into different API kinds that have interdependent relationships to support the role-oriented nature of organizations.
+A Gateway object is associated with exactly one GatewayClass; the GatewayClass describes the gateway controller responsible for managing Gateways of this class. 
+One or more route kinds such as HTTPRoute, are then associated to Gateways. A Gateway can filter the routes that may be attached to its listeners, forming a bidirectional trust model with routes.
+
+HTTPRoute --> Gateway --> Gatewayclass
+
+client --> HTTP request --> Gateway --> HTTPRoute (follows the routing rule) --> service --> pods
+
+
