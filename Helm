@@ -1,0 +1,16 @@
+Helm is a automation extension for the K8s cluster (simply, a software package manager), Helm works on charts which are yaml files with deployments and services written as templates,
+only the values are attached for the release any changes within the release is defined as revision plans.
+  Helm 2 and Helm 3 , before introduciton of RBAC and CRDs, helm 2 worked with tiller, Helm 3 works without tiller.
+
+Helm-chart is the K8s configuration and yaml files, When a rollback is made , this is reflected as a new revision in helm.
+Helm 2 is limited in revision management, it doesnt notice manual changes done to the helm deployment. Helm 3 over comes this, The Helm 3 uses,
+3-way stratergic merge patch.
+It checks,
+
+
+Previous chart -----> Current chart ----> Live state ----> Previous chart
+
+
+This notices any independent changes in the helm based components and does the rollback accordingly.
+
+Helm charts are stored in online repos, artifacthub.io is the main repo for charts.
