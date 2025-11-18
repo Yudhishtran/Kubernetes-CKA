@@ -14,3 +14,5 @@ Previous chart -----> Current chart ----> Live state ----> Previous chart
 This notices any independent changes in the helm based components and does the rollback accordingly.
 
 Helm charts are stored in online repos, artifacthub.io is the main repo for charts.
+
+Helm uses metadata to store the charts and current revision and releases as kubernetes secrets (ie within the cluster).
