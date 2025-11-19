@@ -1,0 +1,21 @@
+completed kustomize
+with understanding of patch , json 6902 inline patch and stratergic merge patch,
+understood overlays and components,
+understood kustomize filesystem
+with
+
+base/
+|
+|
+kustomize.yaml
+| - components/
+|
+ - overlays/
+  |
+   - dev/
+  |
+   - test/
+  | 
+    - staging/
+  |
+    - prod/
